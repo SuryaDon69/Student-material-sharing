@@ -4,12 +4,20 @@ This is a Flask-based web application that allows students to share study materi
 - Flask (Python)
 - MySQL
 - Socket.IO
+- Jinja Template
 
 ## Features
 - User and Admin authentication
-- Upload/download notes
-- Chat system
+- Upload,download,prieview notes
+- Chat system, OpenAi
 - Department-wise categorization
+- By Admin approval notes are upload on System
+- Admin can also prieview , download and approve the notes
+- only approved notes are visible on home screen
+- Admin can also manage the users
+- All user can chat with each other
+- Included OpenAi API
+- Without login any user can't Download any notes
 
 ## Setup Instructions
 1. Clone the repo
