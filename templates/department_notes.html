@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ stream }} Notes - Student Notes Sharing{% endblock %}
+
+{% block content %}
+<section class="notes-section">
+    <h2 class="section-title">{{ stream }} Department - Notes</h2>
+
+    <div class="notes-grid">
+        {% for note in notes %}
+        <div class="note-card">
+            <h3>{{ note.title }} ({{ note.subject }})</h3>
+            <p><strong>Stream:</strong> {{ note.stream }}</p>
+            <p><strong>Uploaded by:</strong> {{ note.first_name }} {{ note.last_name }}</p>
+            {% if session.get('user_id') or session.get('admin_id') %}
+            <a href="{{ url_for('download_note', note_id=note.id) }}" class="button small">Download</a>
+            {% else %}
+            <p><em>Login to download</em></p>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="no-notes-msg">No notes found for {{ stream }} department yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

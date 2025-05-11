@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <a class="button green" href="{{ url_for('upload_note') }}">Upload Note</a>
+    <a class="link" href="{{ url_for('user_change_password') }}">Change Password</a>
+</div>
+
+<form method="get" action="{{ url_for('search') }}" class="search-form">
+    <input type="text" name="query" placeholder="Search by title, subject, or stream..." required>
+    <button type="submit" class="button">Search</button>
+</form>
+
+<h3>Your Notes</h3>
+<table class="custom-table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Subject</th>
+            <th>Stream</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for note in notes %}
+        <tr>
+            <td>{{ note.title }}</td>
+            <td>{{ note.subject }}</td>
+            <td>{{ note.stream }}</td>
+            <td>{{ note.status }}</td>
+            <td>
+                <a href="{{ url_for('download_note', note_id=note.id) }}">Download</a> |
+                <a href="{{ url_for('delete_note', note_id=note.id) }}">Delete</a> |
+                <a href="{{ url_for('preview_note', note_id=note.id) }}">Preview</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

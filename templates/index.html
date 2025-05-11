@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block title %}Home - Student Notes Sharing{% endblock %}
+
+{% block content %}
+<!-- Full-Screen Hero Section -->
+<section class="hero-section">
+    <div class="hero-overlay">
+        <h1>📘 Notes Sharing Platform!</h1>
+        <p class="intro-text">
+            Your one-stop destination to <strong>share</strong>, <strong>explore</strong>, and <strong>discuss</strong> study materials.
+            Whether you're looking for revision notes or uploading resources — you're in the right place!
+        </p>
+
+        {% if not session.get('user_id') and not session.get('admin_id') %}
+        <div class="cta-buttons">
+            <a href="{{ url_for('register') }}" class="button">Get Started</a>
+            <a href="{{ url_for('login') }}" class="button outline">Login</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Browse by Department Section -->
+<section class="department-section">
+    <h2 class="section-title">Browse by Department</h2>
+    <div class="department-buttons">
+        {% for dept in departments %}
+        <a href="{{ url_for('department_notes', stream=dept) }}" class="dept-button">{{ dept }}</a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Latest Notes Section -->
+<section class="notes-section">
+    <h2 class="section-title">Latest Notes</h2>
+    <div class="notes-grid">
+        {% for note in notes %}
+        <div class="note-card" data-index="{{ loop.index0 }}" {% if loop.index > 10 %}style="display:none"{% endif %}>
+            <h3>{{ note.title }} ({{ note.subject }})</h3>
+            <p><strong>Stream:</strong> {{ note.stream }}</p>
+            <p><strong>Uploaded by:</strong> {{ note.first_name }} {{ note.last_name }}</p>
+            {% if session.get('user_id') or session.get('admin_id') %}
+            <a href="{{ url_for('download_note', note_id=note.id) }}" class="button small">Download</a>
+            {% else %}
+            <p><em>Login to download</em></p>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="no-notes-msg">No approved notes yet. Be the first to upload!</p>
+        {% endfor %}
+    </div>
+
+    {% if notes|length >= 8 %}
+    <div class="show-toggle-container">
+        <button id="toggleButton" class="button outline">Show More</button>
+    </div>
+    {% endif %}
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleButton = document.getElementById("toggleButton");
+    const noteCards = document.querySelectorAll(".note-card");
+
+    let expanded = false;
+
+    if (toggleButton) {
+        toggleButton.addEventListener("click", function () {
+            noteCards.forEach((card, index) => {
+                if (index >= 8) {
+                    card.style.display = expanded ? "none" : "block";
+                }
+            });
+
+            toggleButton.textContent = expanded ? "Show More" : "Show Less";
+            expanded = !expanded;
+        });
+    }
+});
+</script>
+
+<style>
+.show-toggle-container {
+    text-align: center;
+    margin-top: 20px;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<form method="post" class="auth-form">
+    <h2>Create an Account</h2>
+
+    <div class="form-group">
+        <label for="first_name">First Name</label>
+        <input type="text" name="first_name" id="first_name" required>
+    </div>
+
+    <div class="form-group">
+        <label for="last_name">Last Name</label>
+        <input type="text" name="last_name" id="last_name" required>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required>
+    </div>
+
+    <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="text" name="phone" id="phone" required>
+    </div>
+
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required>
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+    </div>
+
+    <div class="form-group">
+        <label for="role">Select Role</label>
+        <select name="role" id="role" required>
+            <option value="user" selected>User</option>
+            <option value="admin">Admin</option>
+        </select>
+    </div>
+
+    <button type="submit" class="button">Register</button>
+
+    <p class="switch-link">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+</form>
+
+{% endblock %}
+

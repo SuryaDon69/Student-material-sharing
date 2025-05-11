@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}Search Results - Student Notes Sharing{% endblock %}
+
+{% block content %}
+<section class="search-results-section">
+    <h2 class="section-title">Search Results for "<span class="highlight">{{ query }}</span>"</h2>
+
+    {% if notes %}
+    <div class="notes-grid">
+        {% for note in notes %}
+        <div class="note-card">
+            <h3>{{ note.title }}</h3>
+            {% if note.description %}
+            <p class="note-desc">{{ note.description }}</p>
+            {% endif %}
+            <a href="{{ url_for('preview_note', note_id=note.id) }}" class="button small">Preview</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-notes-msg">🚫 No matching notes found. Try a different keyword.</p>
+    {% endif %}
+</section>
+{% endblock %}

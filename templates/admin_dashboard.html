@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <a class="button red" href="{{ url_for('logout') }}">Logout</a>
+    <a class="link" href="{{ url_for('admin_change_password') }}">Change Password</a>
+</div>
+
+<h3>All Notes</h3>
+<table class="custom-table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for note in notes %}
+        <tr>
+            <td>{{ note.title }}</td>
+            <td>{{ note.subject }}</td>
+            <td>{{ note.status }}</td>
+            <td>
+                <a href="{{ url_for('preview_notes', note_id=note.id) }}" target="_blank">Preview</a> |
+                <a href="{{ url_for('admin_delete_note', note_id=note.id) }}">Delete</a> |
+                <a href="{{ url_for('update_note_status', note_id=note.id, status='approved') }}">Approve</a> |
+                <a href="{{ url_for('update_note_status', note_id=note.id, status='rejected') }}">Reject</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>All Users</h3>
+<table class="custom-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td><a href="{{ url_for('admin_delete_user', user_id=user.id) }}">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

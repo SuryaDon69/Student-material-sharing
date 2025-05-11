@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% block title %}Preview Note{% endblock %}
+{% block content %}
+<iframe src="{{ url_for('serve_note_file', filename=filename) }}" width="100%" height="600px"></iframe>
+<a class="ui button" href="{{ url_for('user_dashboard') }}">Back</a>
+{% endblock %}

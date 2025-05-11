@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Start a Chat</h2>
+  <div class="list-group">
+    {% for user in users %}
+    <ul>
+    <a href="{{ url_for('chat', receiver_id=user.id) }}" class="list-group-item list-group-item-action">
+      {{ user.first_name }} {{ user.last_name }}
+    </a>
+  </ul>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
