@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Student Notes Sharing</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-
+  <meta charset="UTF-8">
+  <title>Student Notes Sharing</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
   <header class="navbar">
@@ -13,67 +12,93 @@
       <div class="logo">
         <a href="{{ url_for('home') }}">📚 Student Notes Sharing</a>
       </div>
+
       <nav class="nav-links">
         {% if session.get('user_id') %}
           <a href="{{ url_for('user_dashboard') }}">Dashboard</a>
           <a href="{{ url_for('upload_note') }}">Upload</a>
           <a href="{{ url_for('user_list') }}">Chat</a>
-          <a href="https://chat.openai.com">OpenAI</a>
-          <a href="{{ url_for('about') }}">About Us</a>
-          <a href="{{ url_for('logout') }}">Logout</a>
+          <a href="{{ url_for('openai_ui')}}">OpenAI</a>
+
+          <div class="profile-dropdown">
+            <button class="profile-button">
+              {% if session.get('avatar_url') %}
+                <img src="{{ session['avatar_url'] }}" alt="Avatar" class="avatar">
+              {% else %}
+                <i class="fas fa-user-circle"></i>
+              {% endif %}
+              {{ session.get('username', 'Profile') }} <i class="fas fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+              <a href="{{ url_for('user_profile') }}">Profile</a>
+              <a href="{{ url_for('about') }}">About Us</a>
+              <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+          </div>
+
         {% elif session.get('admin_id') %}
           <a href="{{ url_for('admin_dashboard') }}">Admin Panel</a>
-          <a href="{{ url_for('about') }}">About Us</a>
-          <a href="{{ url_for('logout') }}">Logout</a>
+
+          <div class="profile-dropdown">
+            <button class="profile-button">
+              <i class="fas fa-user-shield"></i>
+              {{ session.get('username', 'Admin') }} <i class="fas fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+              <a href="{{ url_for('admin_profile') }}">Profile</a>
+              <a href="{{ url_for('about') }}">About Us</a>
+              <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+          </div>
+
         {% else %}
           <a href="{{ url_for('login') }}">Login</a>
           <a href="{{ url_for('register') }}">Register</a>
           <a href="{{ url_for('about') }}">About Us</a>
         {% endif %}
       </nav>
+
       <form class="search-form" action="{{ url_for('search') }}" method="get">
         <input class="search-input" type="search" name="query" placeholder="Search notes" aria-label="Search">
         <button class="search-button" type="submit"><i class="fas fa-search"></i></button>
       </form>
     </div>
   </header>
-  
 
-    <main>
-      {% with messages = get_flashed_messages(with_categories=true) %}
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
           <div class="flash {{ category }}">{{ message }}</div>
         {% endfor %}
       {% endif %}
-      {% endwith %}
-        {% block content %}{% endblock %}
-    </main>
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
 
-    <footer class="footer">
-      <div class="footer-content">
-          <div class="footer-left">
-              <p>&copy; 2025 Student Notes Sharing Platform. All Rights Reserved.</p>
-              <p>Made with ❤️ by Suraj Kanaujiya</p>
-          </div>
-          <div class="footer-middle">
-              <ul class="footer-links">
-                  <li><a href="#">About Us</a></li>
-                  <li><a href="#">Contact</a></li>
-                  <li><a href="#">Privacy Policy</a></li>
-                  <li><a href="#">Terms of Service</a></li>
-              </ul>
-          </div>
-          <div class="footer-right">
-              <div class="social-icons">
-                  <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                  <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                  <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
-                  <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-              </div>
-          </div>
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <p>&copy; 2025 Student Notes Sharing Platform. All Rights Reserved.</p>
+        <p>Made with ❤️ by Suraj Kanaujiya</p>
       </div>
+      <div class="footer-middle">
+        <ul class="footer-links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="footer-right">
+        <div class="social-icons">
+          <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+    </div>
   </footer>
-  
 </body>
 </html>

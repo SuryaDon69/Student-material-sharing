@@ -114,22 +114,25 @@
     const socket = io();
     const receiverId = "{{ receiver_id }}";
     const senderId = "{{ session['user_id'] }}";
-    const roomId = [receiverId, senderId].sort().join('_');
+    const senderUsername = "{{ sender_username }}";  // ✅ Passed from Flask
 
+    const roomId = [receiverId, senderId].sort().join('_');
     socket.emit('join_room', { room: roomId });
+
+    const chatBox = document.getElementById('chat-box');
+    const input = document.getElementById('message-input');
 
     document.getElementById('chat-form').addEventListener('submit', function (e) {
         e.preventDefault();
-        const input = document.getElementById('message-input');
         const message = input.value.trim();
         if (message !== '') {
             socket.emit('send_message', {
                 receiver_id: receiverId,
+                sender_username: senderUsername,
                 message: message,
                 room: roomId
             });
 
-            const chatBox = document.getElementById('chat-box');
             chatBox.innerHTML += `
                 <div class="chat-message">
                     <div class="chat-meta">
@@ -144,7 +147,6 @@
     });
 
     socket.on('receive_message', function (data) {
-        const chatBox = document.getElementById('chat-box');
         chatBox.innerHTML += `
             <div class="chat-message">
                 <div class="chat-meta">
@@ -155,5 +157,8 @@
             </div>`;
         chatBox.scrollTop = chatBox.scrollHeight;
     });
+
+    
 </script>
+
 {% endblock %}

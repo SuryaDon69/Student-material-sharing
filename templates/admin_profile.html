@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="profile-container">
+  <h2 class="profile-heading">Admin Profile</h2>
+  
+  <form method="POST" class="profile-form">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" value="{{ admin.username }}" required>
+    </div>
+
+    <button type="submit" class="btn-update">Update Profile</button>
+  </form>
+</div>
+
+{% endblock %}

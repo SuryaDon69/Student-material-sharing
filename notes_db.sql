@@ -43,3 +43,5 @@ CREATE TABLE admin (
 );
 INSERT INTO admin (username, password)
 VALUES ('admin', 'admin123');
+ALTER TABLE admin ADD COLUMN avatar_url VARCHAR(255) DEFAULT NULL;
+

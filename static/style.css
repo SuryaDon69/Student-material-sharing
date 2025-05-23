@@ -2,9 +2,10 @@
 * {
     margin: 0;
     padding: 0;
-    width: 100;
+    width: 100; 
     box-sizing: border-box;
 }
+
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -901,3 +902,196 @@ main {
     font-size: 1.1rem;
     margin-top: 2rem;
 }
+
+
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .profile-button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 1rem;
+  }
+  
+  .profile-button i, .profile-button img {
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+  
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    right: 0;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  .dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .profile-dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+
+  .profile-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-heading {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 25px;
+    color: #2c3e50;
+  }
+  
+  .profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #34495e;
+  }
+  
+  .form-group input {
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  
+  .form-group input:focus {
+    border-color: #2980b9;
+  }
+  
+  .btn-update {
+    padding: 12px;
+    font-size: 16px;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-update:hover {
+    background-color: #1c5980;
+  }
+
+  .avatar-preview-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+    cursor: pointer;
+    position: relative;
+    width: 130px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .avatar-label {
+    display: inline-block;
+    text-align: center;
+    color: #2980b9;
+  }
+  
+  .avatar-preview {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #2980b9;
+    transition: box-shadow 0.3s;
+  }
+  
+  .avatar-preview-container:hover .avatar-preview {
+    box-shadow: 0 0 12px 3px #2980b9;
+  }
+  
+  .change-avatar-text {
+    font-size: 14px;
+    margin-top: 8px;
+    font-weight: 600;
+    color: #2980b9;
+  }
+  
+
+  /* Glassmorphic Card Styling */
+.glassmorphic {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .user-card-link:hover .glassmorphic {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Avatar Circle */
+  .avatar-circle {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-weight: bold;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  
+  /* Gradient Text */
+  .text-gradient {
+    background: linear-gradient(45deg, #5f2c82, #49a09d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* Responsive Typography */
+  h2, h5 {
+    font-family: 'Poppins', sans-serif;
+  }
+  

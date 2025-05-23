@@ -1,9 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash, send_from_directory
 from flask_socketio import SocketIO, emit, join_room
 from werkzeug.utils import secure_filename
-import os
+import os , openai
 import mysql.connector
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env
+print("OPENAI_API_KEY:", os.getenv("OPENAI_API_KEY"))
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 app = Flask(__name__)
@@ -220,7 +225,11 @@ def admin_dashboard():
     if 'admin_id' not in session or session.get('role') != 'admin':
         return redirect(url_for('login'))
 
-    cursor.execute("SELECT * FROM notes")
+    cursor.execute("""
+        SELECT notes.*, users.first_name, users.last_name 
+        FROM notes 
+        JOIN users ON notes.user_id = users.id
+    """)
     notes = cursor.fetchall()
 
     cursor.execute("SELECT * FROM users")
@@ -330,7 +339,6 @@ def search():
 
     return render_template('search_results.html', query=query, notes=results)
 
-
 @app.route('/chat/<int:receiver_id>')
 def chat(receiver_id):
     if 'user_id' not in session:
@@ -341,16 +349,18 @@ def chat(receiver_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Fetch all chat messages
+    # Get chat messages between sender and receiver
     cursor.execute("""
-        SELECT * FROM chat_messages 
-        WHERE (sender_id = %s AND receiver_id = %s) OR (sender_id = %s AND receiver_id = %s)
-        ORDER BY timestamp
+        SELECT cm.*, u.username AS sender_username 
+        FROM chat_messages cm
+        JOIN users u ON cm.sender_id = u.id
+        WHERE (cm.sender_id = %s AND cm.receiver_id = %s) 
+           OR (cm.sender_id = %s AND cm.receiver_id = %s)
+        ORDER BY cm.timestamp
     """, (sender_id, receiver_id, receiver_id, sender_id))
-    
     messages = cursor.fetchall()
 
-    # Mark all unread messages as read for the current user (receiver)
+    # Mark messages as read
     cursor.execute("""
         UPDATE chat_messages 
         SET is_read = TRUE 
@@ -358,14 +368,19 @@ def chat(receiver_id):
     """, (sender_id, receiver_id))
     conn.commit()
 
-    cursor.execute("SELECT first_name,last_name FROM users WHERE id = %s", (receiver_id,))
+    # Get receiver info
+    cursor.execute("SELECT first_name, last_name, username FROM users WHERE id = %s", (receiver_id,))
     receiver = cursor.fetchone()
+
+    # Get sender username
+    cursor.execute("SELECT username FROM users WHERE id = %s", (sender_id,))
+    sender = cursor.fetchone()
+    sender_username = sender['username']
 
     cursor.close()
     conn.close()
 
-    return render_template('chat.html', messages=messages, receiver=receiver, receiver_id=receiver_id)
-
+    return render_template('chat.html', messages=messages, receiver=receiver, receiver_id=receiver_id, sender_username=sender_username)
 
 @socketio.on('send_message')
 def handle_send_message(data):
@@ -373,27 +388,27 @@ def handle_send_message(data):
     receiver_id = data['receiver_id']
     message = data['message']
     room = data['room']
+    sender_username = data['sender_username']  # ✅ From JS
 
-    # Save the message to the database with is_read = False
+    # Save to DB
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO chat_messages (sender_id, receiver_id, message, is_read) VALUES (%s, %s, %s, %s)",
-                   (sender_id, receiver_id, message, False))
+    cursor.execute("""
+        INSERT INTO chat_messages (sender_id, receiver_id, message, is_read) 
+        VALUES (%s, %s, %s, %s)
+    """, (sender_id, receiver_id, message, False))
     conn.commit()
+    cursor.close()
+    conn.close()
 
-    # Emit the message to the receiver's side
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Use the datetime module
-    sender_username = session['username']
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+    # Emit to room
     emit('receive_message', {
         'sender_username': sender_username,
         'message': message,
-        'timestamp': timestamp,
-        'sender_id': sender_id
+        'timestamp': timestamp
     }, room=room)
-
-    cursor.close()
-    conn.close()
 
 
 
@@ -435,6 +450,93 @@ def user_list():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+@app.route('/user/profile', methods=['GET', 'POST'])
+def user_profile():
+    if 'user_id' not in session or session.get('role') != 'user':
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        phone = request.form['phone']
+
+        cursor.execute("""
+            UPDATE users 
+            SET first_name = %s, last_name = %s, email = %s, phone = %s 
+            WHERE id = %s
+        """, (first_name, last_name, email, phone, user_id))
+        conn.commit()
+        flash("Profile updated successfully!", "success")
+
+    cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    user = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('user_profile.html', user=user)
+
+@app.route('/admin/profile', methods=['GET', 'POST'])
+def admin_profile():
+    if 'admin_id' not in session or session.get('role') != 'admin':
+        return redirect(url_for('login'))
+
+    admin_id = session['admin_id']
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    if request.method == 'POST':
+        username = request.form['username']
+
+        cursor.execute("UPDATE admin SET username = %s WHERE id = %s", (username, admin_id))
+        conn.commit()
+        flash("Profile updated successfully!", "success")
+
+    cursor.execute("SELECT * FROM admin WHERE id = %s", (admin_id,))
+    admin = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('admin_profile.html', admin=admin)
+
+
+@app.route('/openai_chat', methods=['POST'])
+def openai_chat():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    data = request.get_json()
+    user_input = data.get('message')
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",  # or "gpt-4" if enabled
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant for students."},
+                {"role": "user", "content": user_input}
+            ]
+        )
+        reply = response['choices'][0]['message']['content']
+        return jsonify({'response': reply})
+
+    except Exception as e:
+        print(f"OpenAI API error: {e}")
+        return jsonify({'error': 'OpenAI API request failed'}), 500
+
+
+@app.route('/openai')
+def openai_ui():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('openai_chat.html')
 
 
 if __name__ == '__main__':

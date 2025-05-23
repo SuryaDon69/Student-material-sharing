@@ -14,6 +14,7 @@
             <th>Title</th>
             <th>Subject</th>
             <th>Status</th>
+            <th>Uploader</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -23,6 +24,7 @@
             <td>{{ note.title }}</td>
             <td>{{ note.subject }}</td>
             <td>{{ note.status }}</td>
+            <td>{{ note.first_name }} {{ note.last_name }}</td>  <!-- Show uploader's username -->
             <td>
                 <a href="{{ url_for('preview_notes', note_id=note.id) }}" target="_blank">Preview</a> |
                 <a href="{{ url_for('admin_delete_note', note_id=note.id) }}">Delete</a> |
@@ -39,7 +41,7 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Username</th>
+            <th>User Name</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -47,7 +49,7 @@
         {% for user in users %}
         <tr>
             <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
             <td><a href="{{ url_for('admin_delete_user', user_id=user.id) }}">Delete</a></td>
         </tr>
         {% endfor %}
